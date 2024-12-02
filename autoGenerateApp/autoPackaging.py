@@ -65,7 +65,7 @@ def extract_result(text):
             return text[start:end]
     return text  
 
-standard_image = resize_image_to_480p_base64("./Strandard.png")
+standard_image = "{standard_image}"
 
 with open('results.csv', 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
