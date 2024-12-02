@@ -1,8 +1,7 @@
 import base64
-import openai
 from openai import OpenAI
 import base64
-import httpx
+
 
 API_BASE = "https://xdaicn.top/v1"
 API_KEY = "sk-4Y9hIZXOQY8WmLm5R6Fr7hKDdyDPy64TNqXyw6FIcrZXJNUM"
@@ -82,17 +81,18 @@ with open(image1_path, "rb") as image_file:
 with open(image2_path, "rb") as image_file:
   image2 = "data:image/jpeg;base64," + base64.b64encode(image_file.read()).decode('utf-8')
   
-
-# Make a request, can be multi round
+print(image1)
+# Make a request, can be multi round gemini-1.0-pro-vision-latest
 completion = client.chat.completions.create(
-  model="gpt-4-vision-preview",
+  model="gpt-4o-2024-08-06",
+  # model="gemini-1.0-pro-vision-latest",
   messages=[
     {
       "role": "user",
       "content": [
         {
           "type": "text",
-          "text": "Please provide the trait type of the second image based on the trait discrimination criteria in the first image."
+          "text": "请你根据第一张图片中的判断标准，判断第二张图片所归属的类型。第一段输出描述，第二段输出判断结果并在判断结果的左右添加$符号。按照以下格式填写：$判断结果$",
         },
         {
           "type": "image_url",
@@ -110,4 +110,6 @@ completion = client.chat.completions.create(
     },
   ]
 )
-print(completion)
+
+print(completion.json())
+

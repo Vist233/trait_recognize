@@ -1,1 +1,7 @@
 pyinstaller
+base64
+PIL
+openai
+requests
+csv
+shutil
