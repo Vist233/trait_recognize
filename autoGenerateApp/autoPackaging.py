@@ -1,5 +1,5 @@
 from openai import OpenAI
-import autoGenerateApp.packageFunc as packageFunc
+import packageFunc
 
 # API_BASE = "https://api.lingyiwanwu.com/v1"
 # API_KEY = "1352a88fdd3844deaec9d7dbe4b467d5"
@@ -54,16 +54,56 @@ def resize_image_to_480p_base64(image_path):
             img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
             return "data:image/jpeg;base64," + img_str
     except Exception as e:
-        print(f"Error processing image {image_path}: {str(e)}")
+        print(f"Error when processing image.")
         return None
 
 def extract_result(text):
-    if '$' in text:
-        start = text.find('$') + 1
-        end = text.rfind('$')
-        if start < end:
-            return text[start:end]
-    return text  
+    try:
+        text = text.encode('utf-8').decode('utf-8')
+        if '$' in text:
+            start = text.find('$') + 1
+            end = text.rfind('$')
+            if start < end:
+                return text[start:end]
+    except Exception as e:
+        print(f"Error extracting result")
+    return "None"  
+
+def process_image(client, model, standard_image, image):
+    try:
+        completion = client.chat.completions.create(
+            model=model,
+            messages=[
+                {{
+                    "role": "user",
+                    "content": [
+                        {{
+                            "type": "text",
+                            "text": "请你根据第一张图片中的判断标准，判断第二张图片所归属的类型。第一段输出描述，第二段输出判断结果并在判断结果的左右添加$符号。按照以下格式填写：$判断结果$"
+                        }},
+                        {{
+                            "type": "image_url",
+                            "image_url": {{
+                                "url": standard_image
+                            }}
+                        }},
+                        {{
+                            "type": "image_url",
+                            "image_url": {{
+                                "url": image
+                            }}
+                        }}
+                    ]
+                }}
+            ]
+        )
+        
+        full_result = completion.choices[0].message.content
+        result = extract_result(full_result)
+        return result
+    except Exception as e:
+        print(f"Error when processing image")
+        return "Error"
 
 standard_image = "{standard_image}"
 
@@ -78,41 +118,13 @@ with open('results.csv', 'w', newline='', encoding='utf-8') as csvfile:
                 if not image:
                     continue
 
-                completion = client.chat.completions.create(
-                    model=Model,  # Changed from "{Model}" to Model
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": "请你根据第一张图片中的判断标准，判断第二张图片所归属的类型。第一段输出描述，第二段输出判断结果并在判断结果的左右添加$符号。按照以下格式填写：$判断结果$"
-                                },
-                                {
-                                    "type": "image_url",
-                                    "image_url": {
-                                        "url": standard_image
-                                    }
-                                },
-                                {
-                                    "type": "image_url",
-                                    "image_url": {
-                                        "url": image
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                )
-                
-                full_result = completion.choices[0].message.content
-                result = extract_result(full_result)
-                print(f"Result for {filename}: {result}")
+                result = process_image(client, Model, standard_image, image)
+                print(f"One image has been processed.")
                 writer.writerow([filename, result])
             
             except Exception as e:
-                print(f"Error processing {filename}: {str(e)}")
-                writer.writerow([filename, f"Error: {str(e)}"])
+                print(f"Error when processing")
+                writer.writerow([filename, f"Error"])
 
 input("Press Enter to exit...")
 """
