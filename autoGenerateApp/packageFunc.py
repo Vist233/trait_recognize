@@ -74,4 +74,4 @@ if __name__ == "__main__":
     print("Hello, World!")
     """
     package_to_exe(code, 'hello.py')
-    resize_image_to_1080p('input_image.jpg', 'output_image.jpg')
+    # resize_image_to_1080p('input_image.jpg', 'output_image.jpg')
