@@ -1,13 +1,12 @@
 from openai import OpenAI
 import packageFunc
+import os
 
-# API_BASE = "https://api.lingyiwanwu.com/v1"
-# API_KEY = "1352a88fdd3844deaec9d7dbe4b467d5"
-# Model = "gpt-4o-2024-08-06"
 
+API_KEY = os.environ.get("YI_API_KEY", "your API key here")
 API_BASE = "https://api.lingyiwanwu.com/v1"
-API_KEY = "1352a88fdd3844deaec9d7dbe4b467d5"
 Model = "yi-vision"
+
 
 client = OpenAI(
   api_key=API_KEY,
