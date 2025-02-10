@@ -7,7 +7,7 @@ import io
 
 def package_to_exe(code_str, file_name):
     # Write the code string to a .py file
-    with open(file_name, 'w') as file:
+    with open(file_name, 'w', encoding='utf-8') as file:
         file.write(code_str)
     
     # Use pyinstaller to package the .py file into an .exe
@@ -71,7 +71,7 @@ def resize_image_to_480p_base64(image_path):
 # Example usage
 if __name__ == "__main__":
     code = """
-    print("Hello, World!")
+print("Hello, World!")
     """
     package_to_exe(code, 'hello.py')
     # resize_image_to_1080p('input_image.jpg', 'output_image.jpg')

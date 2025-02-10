@@ -3,9 +3,9 @@ import packageFunc
 import os
 
 
-API_KEY = os.environ.get("YI_API_KEY", "your API key here")
+API_KEY = "b9804fbc97884e278f7b8cc1c5bf8136"
 API_BASE = "https://api.lingyiwanwu.com/v1"
-Model = "yi-vision"
+Model = "yi-vision-v2"
 
 
 client = OpenAI(
@@ -36,6 +36,7 @@ client = OpenAI(
     api_key=API_KEY,
     base_url=API_BASE
 )
+
 
 def resize_image_to_480p_base64(image_path):
     try:
@@ -108,7 +109,7 @@ standard_image = "{standard_image}"
 
 with open('results.csv', 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(['filename', 'result'])
+    writer.writerow(['filename', 'result']) 
 
     for filename in os.listdir('.'):
         if filename.endswith(('.png', '.jpg', '.jpeg')):
@@ -129,4 +130,3 @@ input("Press Enter to exit...")
 """
 
 packageFunc.package_to_exe(process_images_code, 'hello.py')
-

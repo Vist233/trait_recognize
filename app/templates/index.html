@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片处理工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .upload-container {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-container:hover {
+            border-color: #2196F3;
+            background-color: #f8f9ff;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .upload-label {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .upload-label:hover {
+            background-color: #1976D2;
+        }
+
+        #status {
+            margin-top: 1rem;
+            color: #666;
+            min-height: 20px;
+        }
+
+        #error {
+            color: #dc3545;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #2196F3;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>考种助手</h1>
+        <div class="upload-container">
+            <input type="file" id="fileInput" accept="image/*">
+            <label for="fileInput" class="upload-label">
+                <span>上传标准图片</span>
+            </label>
+            <div id="status"></div>
+            <div id="error"></div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const status = document.getElementById('status');
+        const error = document.getElementById('error');
+
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 重置状态
+            error.style.display = 'none';
+            status.innerHTML = '<div class="loading"></div> 处理中，请稍候...';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+
+                // 自动下载
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = 'spade.exe';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(downloadUrl);
+                document.body.removeChild(a);
+
+                    status.innerHTML = '✅ 处理完成！文件已自动下载';
+                setTimeout(() => status.innerHTML = '', 3000);
+            } catch (err) {
+                error.style.display = 'block';
+                error.textContent = `错误：${err.message}`;
+                status.innerHTML = '';
+            } finally {
+                fileInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -5,8 +5,7 @@ import cv2
 import numpy as np
 import os
 import csv
-import logging
-import matplotlib.pyplot as plt
+
 
 green_lower = np.array([30, 40, 20])
 green_upper = np.array([90, 255, 255])
