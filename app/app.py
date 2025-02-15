@@ -1,7 +1,10 @@
 from flask import Flask, request, send_file, render_template
 import os
 from openai import OpenAI
-from autoGenerateApp import packageFunc
+try:
+    from autoGenerateApp import packageFunc
+except ImportError:
+    import packageFunc
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
@@ -9,9 +12,9 @@ OUTPUT_FILE = "spade.exe"   # spade n.铲子
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # API配置
-API_KEY = "b9804fbc97884e278f7b8cc1c5bf8136"
-API_BASE = "https://api.lingyiwanwu.com/v1"
-Model = "yi-vision-v2"
+API_KEY = "sk-e82df05b5c9443cab084419078b31c32"
+API_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+Model = "qwen2.5-vl-72b-instruct"
 
 client = OpenAI(
     api_key=API_KEY,

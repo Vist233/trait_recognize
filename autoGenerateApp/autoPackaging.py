@@ -3,9 +3,9 @@ import packageFunc
 import os
 
 
-API_KEY = "b9804fbc97884e278f7b8cc1c5bf8136"
-API_BASE = "https://api.lingyiwanwu.com/v1"
-Model = "yi-vision-v2"
+API_KEY = "sk-e82df05b5c9443cab084419078b31c32"
+API_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+Model = "qwen2.5-vl-72b-instruct"
 
 
 client = OpenAI(
