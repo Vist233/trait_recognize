@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, render_template
+from flask import Flask, request, send_file, render_template, jsonify
 import os
 from openai import OpenAI
 from autoGenerateApp import packageFunc
@@ -6,6 +6,8 @@ from autoGenerateApp import packageFunc
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FILE = "spade.exe"   # spade n.铲子
+# 配置固定程序目录
+FIXED_PROG_DIR = os.path.abspath("../fixedQuantityProg")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # API配置
@@ -167,6 +169,34 @@ input("Press Enter to exit...")
     except Exception as e:
         return f"处理过程中发生错误: {str(e)}", 500
 
+@app.route('/get_fixed_programs')
+def get_fixed_programs():
+    try:
+        # 获取目录中所有.exe文件（按修改时间倒序）
+        programs = sorted(
+            [f for f in os.listdir(FIXED_PROG_DIR) if f.endswith('.exe')],
+            key=lambda x: os.path.getmtime(os.path.join(FIXED_PROG_DIR, x)),
+            reverse=True
+        )
+        return jsonify({
+            "success": True,
+            "programs": programs
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/download_fixed/<filename>')
+def download_fixed(filename):
+    # 安全验证文件名
+    if not filename.endswith('.exe'):
+        return "无效文件类型", 400
+    file_path = os.path.join(FIXED_PROG_DIR, filename)
+    if not os.path.exists(file_path):
+        return "文件不存在", 404
+    return send_file(file_path, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(debug=True)
